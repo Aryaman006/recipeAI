@@ -1,23 +1,17 @@
-// src/hooks/useAI.js
-const askAI = async (prompt) => {
-    try {
-      const response = await fetch('/api/askAI', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
-      });
+// lib/askLLM.ts
+export const askLLM = async (prompt) => {
+  const response = await fetch('http://localhost:11434/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'mistral',
+      prompt,
+      stream: false,
+    }),
+  });
+  console.log(response);
   
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
-      }
-  
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      console.error('AI Error:', error);
-      return 'Failed to generate response.';
-    }
-  };
-  
-  export default askAI;
-  
+
+  const data = await response.json();
+  return data.response.trim();
+};

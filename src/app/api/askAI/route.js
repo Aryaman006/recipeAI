@@ -18,7 +18,7 @@ export async function POST(req) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'mistralai/mistral-small-3.1-24b-instruct:free', // ✅ Correct model ID
+        model: 'mistralai/mistral-small-3.1-24b-instruct:free', 
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 5000,
       }),

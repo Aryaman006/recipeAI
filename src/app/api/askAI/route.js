@@ -1,8 +1,10 @@
-export const runtime = 'edge'; // Optional: makes it faster on Vercel Edge if supported
-
 export async function POST(req) {
   try {
     const { prompt } = await req.json();
+    console.log("Sending prompt:", prompt);
+console.log("Using API key:", process.env.OPENROUTER_API_KEY);
+console.log("Requesting URL: https://openrouter.ai/v1/chat/completions");
+
 
     if (!prompt) {
       return new Response(JSON.stringify({ error: 'Prompt is required' }), {
@@ -14,26 +16,37 @@ export async function POST(req) {
       });
     }
 
-    const response = await fetch('https://openrouter.ai/v1/chat/completions', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
+        'Authorization': `Bearer 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`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'mistralai/mistral-small-3.1-24b-instruct:free',
+        model: "mistralai/devstral-small:free",
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 5000,
       }),
     });
 
+    console.log(response);
+    
+    const rawText = await response.text(); // Always get the raw response first
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to generate response');
+      console.error('OpenRouter error response:', rawText); // Log raw HTML or error
+      throw new Error(`Failed to generate response from OpenRouter`);
     }
 
-    const data = await response.json();
-    const result = data.choices[0]?.message?.content;
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch (parseError) {
+      console.error('Failed to parse JSON:', rawText);
+      throw new Error('Invalid JSON response from OpenRouter');
+    }
+
+    const result = data.choices?.[0]?.message?.content;
 
     if (!result) {
       throw new Error('Empty response from AI');
@@ -45,17 +58,17 @@ export async function POST(req) {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*', // for CORS
+        'Access-Control-Allow-Origin': '*',
       },
     });
+
   } catch (error) {
-    console.log(error)
     console.error('OpenRouter Error:', error.message);
     return new Response(JSON.stringify({ error: error.message || 'Failed to generate response' }), {
       status: 500,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*', // for CORS
+        'Access-Control-Allow-Origin': '*',
       },
     });
   }

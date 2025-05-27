@@ -6,6 +6,7 @@ import Loading from '@/components/Loading';
 import RecipeCard from '@/components/RecipeCard';
 import { askLLM } from '@/hooks/useAI';
 import AIRecipeContent from '@/components/AIResponse';
+import axios from 'axios';
 
 const Home = () => {
   const [query, setQuery] = useState('');
@@ -51,14 +52,17 @@ const Home = () => {
       
       Then provide step-by-step cooking instructions. Keep the response clear and well-structured.`;
       
-      const aiResult = await askLLM(prompt);
+      const aiResult = await axios.post('/api/askAI', { prompt });
+const aiResponse = aiResult.data.result;
       console.log(aiResult);
+      // console.log(aiResponse);
+      
 
       setRecipes([
         {
           recipe: {
             label: `AI Recipe: ${query}`,
-            description: aiResult,
+            description: aiResponse.join('\n'),
           },
         },
       ]);

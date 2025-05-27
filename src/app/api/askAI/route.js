@@ -1,9 +1,6 @@
 export async function POST(req) {
   try {
     const { prompt } = await req.json();
-    console.log("Sending prompt:", prompt);
-console.log("Using API key:", process.env.OPENROUTER_API_KEY);
-console.log("Requesting URL: https://openrouter.ai/v1/chat/completions");
 
 
     if (!prompt) {

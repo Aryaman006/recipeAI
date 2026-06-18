@@ -121,7 +121,7 @@ const aiResponse = aiResult.data.result;
         {!loading && recipes.length > 0 && !isAIRecipe && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {recipes.map((recipe, index) => (
-              <RecipeCard key={index} recipe={recipe.recipe} />
+              <RecipeCard key={recipe.idMeal} recipe={recipe.recipe} />
             ))}
           </div>
         )}
